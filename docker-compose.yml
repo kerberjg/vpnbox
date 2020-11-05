@@ -1,0 +1,25 @@
+version: '3.6'
+
+services:
+    ikev2:
+        build: https://github.com/kerberjg/docker-vpn-ikev2-roadwarrior.git#develop
+        network_mode: "bridge"
+        environment:
+            - TZ
+            - HOST_ADDR
+            - VPN_SUBNET
+            - VPN_SUBNET_IP6
+            - DNS_SERVER1=1.1.1.1
+            - DNS_SERVER2=1.0.0.1
+            - HOST_FQDN
+            - CONN_NAME
+        ports:
+            - "4500:4500/udp"
+            - "500:500/udp"
+        restart: always
+
+    # TODO: wireguard
+
+    # TODO: webportal
+
+    # TODO(optional): authserver
