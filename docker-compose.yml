@@ -6,6 +6,7 @@ services:
         network_mode: "bridge"
         environment:
             - TZ
+            - SHARED_SECRET
             - HOST_ADDR
             - VPN_SUBNET
             - VPN_SUBNET_IP6
@@ -16,6 +17,8 @@ services:
         ports:
             - "4500:4500/udp"
             - "500:500/udp"
+        cap_add:
+            - NET_ADMIN
         restart: always
 
     # TODO: wireguard
