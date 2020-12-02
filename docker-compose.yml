@@ -1,17 +1,19 @@
-version: '3.6'
+version: '2'
 
 services:
     ikev2:
         build: https://github.com/kerberjg/docker-vpn-ikev2-roadwarrior.git#develop
-        network_mode: "bridge"
+        networks: 
+            vpcbr:
+                ipv4_address: 172.20.0.10
         environment:
             - TZ
             - SHARED_SECRET
             - HOST_ADDR
             - VPN_SUBNET
             - VPN_SUBNET_IP6
-            - DNS_SERVER1=1.1.1.1
-            - DNS_SERVER2=1.0.0.1
+            - DNS_SERVER1=172.20.0.11
+            - DNS_SERVER2=172.20.0.11
             - HOST_FQDN
             - CONN_NAME
         ports:
@@ -21,8 +23,38 @@ services:
             - NET_ADMIN
         restart: always
 
+    dns:
+        image: pihole/pihole:latest
+        networks: 
+            vpcbr:
+                ipv4_address: 172.20.0.11
+        environment:
+            - TZ
+            - DNS1=1.1.1.1
+            - DNS2=1.0.0.1
+            - DNSSEC=true
+            - VIRTUAL_HOST=pi.hole
+        volumes:
+            - './etc-pihole/:/etc/pihole/'
+            - './etc-dnsmasq.d/:/etc/dnsmasq.d/'
+        ports:
+            - "53:53/tcp"
+            - "53:53/udp"
+            - "67:67/udp"
+            - "80:80/tcp"
+            - "443:443/tcp"
+        restart: always
+
     # TODO: wireguard
 
     # TODO: webportal
 
     # TODO(optional): authserver
+
+networks:
+    vpcbr:
+        driver: bridge
+        ipam: 
+            config: 
+                - subnet: 172.20.0.0/16
+                  gateway: 172.20.0.1
