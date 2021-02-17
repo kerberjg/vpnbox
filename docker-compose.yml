@@ -6,6 +6,8 @@ services:
         networks: 
             vpcbr:
                 ipv4_address: 172.20.0.10
+        env_file:
+            - ./data/ikev2.env
         environment:
             - TZ
             - SHARED_SECRET
