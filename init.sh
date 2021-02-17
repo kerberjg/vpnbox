@@ -50,7 +50,7 @@ ufw allow 333/tcp # SSH
 ufw allow 50 # IKEv2
 ufw allow 4500/udp # IKEv2
 ufw allow 500/udp # IKEv2
-#ufw allow 51820/udp # Wireguard
+ufw allow 51820/udp # Wireguard
 ufw --force enable
 
 echo "\nInstallation complete, quitting..."

@@ -14,8 +14,8 @@ services:
             - HOST_ADDR
             - VPN_SUBNET
             - VPN_SUBNET_IP6
-            - DNS_SERVER1=172.20.0.11
-            - DNS_SERVER2=172.20.0.11
+            - DNS_SERVER1=172.20.0.9
+            - DNS_SERVER2=172.20.0.9
             - HOST_FQDN
             - CONN_NAME
         ports:
@@ -25,11 +25,39 @@ services:
             - NET_ADMIN
         restart: always
 
+    wireguard:
+        image: ghcr.io/linuxserver/wireguard
+        networks: 
+            vpcbr:
+                ipv4_address: 172.20.0.11
+        cap_add:
+            - NET_ADMIN
+            - SYS_MODULE
+        env_file:
+            - ./data/ikev2.env
+        environment:
+            - PUID=1000
+            - PGID=1000
+            - TZ
+            - INTERNAL_SUBNET
+            - SERVERURL
+            - SERVERPORT=51820
+            - PEERDNS=172.20.0.9
+            - ALLOWEDIPS=0.0.0.0/0,::/0
+        volumes:
+            - ./data/wireguard-config:/config
+            - /lib/modules:/lib/modules
+        ports:
+            - 51820:51820/udp
+        sysctls:
+            - net.ipv4.conf.all.src_valid_mark=1
+        restart: unless-stopped
+
     dns:
         image: pihole/pihole:latest
         networks: 
             vpcbr:
-                ipv4_address: 172.20.0.11
+                ipv4_address: 172.20.0.9
         environment:
             - TZ
             - DNS1=1.1.1.1
@@ -39,12 +67,12 @@ services:
         volumes:
             - './data/etc-pihole/:/etc/pihole/'
             - './data/etc-dnsmasq.d/:/etc/dnsmasq.d/'
-        ports:
-            - "53:53/tcp"
-            - "53:53/udp"
-            - "67:67/udp"
-            - "80:80/tcp"
-            - "443:443/tcp"
+        expose:
+            - "53"
+            - "53"
+            - "67"
+            - "80"
+            - "443"
         restart: always
 
     # TODO: wireguard
