@@ -35,8 +35,8 @@ services:
             - DNSSEC=true
             - VIRTUAL_HOST=pi.hole
         volumes:
-            - './etc-pihole/:/etc/pihole/'
-            - './etc-dnsmasq.d/:/etc/dnsmasq.d/'
+            - './data/etc-pihole/:/etc/pihole/'
+            - './data/etc-dnsmasq.d/:/etc/dnsmasq.d/'
         ports:
             - "53:53/tcp"
             - "53:53/udp"
